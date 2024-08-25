@@ -11,7 +11,7 @@ const AddProjectForm = ({ onAddProject }) => {
     e.preventDefault();
 
     const newProject = {
-      id: Date.now(), // Or use any unique ID generator
+      id: Date.now(),
       name,
       description,
       department,
@@ -20,8 +20,6 @@ const AddProjectForm = ({ onAddProject }) => {
     };
 
     onAddProject(newProject);
-
-    // Clear the form
     setName('');
     setDescription('');
     setDepartment('');

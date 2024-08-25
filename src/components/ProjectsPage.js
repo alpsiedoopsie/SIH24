@@ -5,7 +5,6 @@ import './ProjectsPage.css';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState(() => {
-    // Retrieve existing projects from local storage if available
     const savedProjects = localStorage.getItem('projects');
     return savedProjects ? JSON.parse(savedProjects) : [];
   });
