@@ -1,9 +1,8 @@
-import ProjectsPage from './components/ProjectsPage';
+import MapWithMarkers from "./components/MapwithMarker";
+import ProjectsPage from "./components/ProjectsPage";
 
 function App() {
-  return (
-    <ProjectsPage />
-  );
+  return <ProjectsPage />;
 }
 
 export default App;

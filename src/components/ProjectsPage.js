@@ -1,37 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import AddProjectForm from './AddProjectForm';
-import './ProjectsPage.css';
-
+import React, { useState, useEffect } from "react";
+import AddProjectForm from "./AddProjectForm";
+import "./ProjectsPage.css";
+import MapWithMarkers from "./MapwithMarker";
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState(() => {
-    // Retrieve existing projects from local storage if available
-    const savedProjects = localStorage.getItem('projects');
+    const savedProjects = localStorage.getItem("projects");
     return savedProjects ? JSON.parse(savedProjects) : [];
   });
+  const [newPlace, setNewPlace] = useState("");
 
-  // Function to add a new project to the list
   const handleAddProject = (newProject) => {
     const updatedProjects = [...projects, newProject];
     setProjects(updatedProjects);
-
-    // Save updated projects to local storage
-    localStorage.setItem('projects', JSON.stringify(updatedProjects));
+    localStorage.setItem("projects", JSON.stringify(updatedProjects));
+    setNewPlace(newProject.place); // Set the new place
   };
 
   return (
     <div className="projects-page">
       <h1>My Projects</h1>
-      <AddProjectForm onAddProject={handleAddProject} />
+      <div className="form-and-map-container">
+        <div className="form-container">
+          <AddProjectForm onAddProject={handleAddProject} />
+        </div>
+        <div className="map-container">
+          <MapWithMarkers place={newPlace} />
+        </div>
+      </div>
       <ul>
         {projects.map((project) => (
-          <li key={project.id}>
-            <h2>{project.name}</h2>
-            <p>{project.description}</p>
-            <p>Department: {project.department}</p>
-            <p>Completion Time: {project.completionTime}</p>
-            <p>Place: {project.place}</p>
-          </li>
+          <React.Fragment key={project.id}>
+            <li>
+              <h2>{project.name}</h2>
+              <p>{project.description}</p>
+              <p>Department: {project.department}</p>
+              <p>Completion Time: {project.completionTime}</p>
+              <p>Place: {project.place}</p>
+            </li>
+          </React.Fragment>
         ))}
       </ul>
     </div>
