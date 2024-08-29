@@ -15,18 +15,30 @@ L.Icon.Default.mergeOptions({
 
 const MapWithMarkers = ({ place, project }) => {
   const [markers, setMarkers] = useState([]);
+  const apiKey = '6be8fe7e245a435999e51f7fc43e3a58'; // Replace with your OpenCage API key
 
   useEffect(() => {
     const addMarker = async () => {
       try {
         const response = await axios.get(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${place}`
+          `https://api.opencagedata.com/geocode/v1/json`,
+          {
+            params: {
+              q: place,
+              key: apiKey,
+            },
+          }
         );
-        const { lat, lon } = response.data[0];
-        setMarkers((prevMarkers) => [
-          ...prevMarkers,
-          { lat, lon, address: place, project: project },
-        ]);
+
+        if (response.data.results && response.data.results.length > 0) {
+          const { lat, lng } = response.data.results[0].geometry;
+          setMarkers((prevMarkers) => [
+            ...prevMarkers,
+            { lat, lon: lng, address: place, project: project },
+          ]);
+        } else {
+          console.error("No location data found for the specified place.");
+        }
       } catch (error) {
         console.error("Error fetching location data:", error);
       }
@@ -35,7 +47,7 @@ const MapWithMarkers = ({ place, project }) => {
     if (place) {
       addMarker();
     }
-  }, [place, project]);
+  }, [place, project, apiKey]);
 
   return (
     <MapContainer
@@ -50,7 +62,7 @@ const MapWithMarkers = ({ place, project }) => {
       {markers.map((marker, index) => (
         <Marker key={index} position={[marker.lat, marker.lon]}>
           <Popup>
-            {marker.project}<br />
+            <strong>{marker.project}</strong><br />
             {marker.address}
           </Popup>
         </Marker>
