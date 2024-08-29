@@ -9,12 +9,14 @@ const ProjectsPage = () => {
     return savedProjects ? JSON.parse(savedProjects) : [];
   });
   const [newPlace, setNewPlace] = useState("");
+  const [projectName, setProjectName] = useState("");
 
   const handleAddProject = (newProject) => {
     const updatedProjects = [...projects, newProject];
     setProjects(updatedProjects);
     localStorage.setItem("projects", JSON.stringify(updatedProjects));
     setNewPlace(newProject.place); // Set the new place
+    setProjectName(newProject.name); // Set the new project name
   };
 
   return (
@@ -25,7 +27,7 @@ const ProjectsPage = () => {
           <AddProjectForm onAddProject={handleAddProject} />
         </div>
         <div className="map-container">
-          <MapWithMarkers place={newPlace} />
+          <MapWithMarkers place={newPlace} project={projectName} />
         </div>
       </div>
       <ul>

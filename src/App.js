@@ -1,4 +1,4 @@
-import MapWithMarkers from "./components/MapwithMarker";
+
 import ProjectsPage from "./components/ProjectsPage";
 
 function App() {

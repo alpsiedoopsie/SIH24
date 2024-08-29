@@ -13,7 +13,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const MapWithMarkers = ({ place }) => {
+const MapWithMarkers = ({ place, project }) => {
   const [markers, setMarkers] = useState([]);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ const MapWithMarkers = ({ place }) => {
         const { lat, lon } = response.data[0];
         setMarkers((prevMarkers) => [
           ...prevMarkers,
-          { lat, lon, address: place },
+          { lat, lon, address: place, project: project },
         ]);
       } catch (error) {
         console.error("Error fetching location data:", error);
@@ -35,7 +35,7 @@ const MapWithMarkers = ({ place }) => {
     if (place) {
       addMarker();
     }
-  }, [place]);
+  }, [place, project]);
 
   return (
     <MapContainer
@@ -49,7 +49,10 @@ const MapWithMarkers = ({ place }) => {
       />
       {markers.map((marker, index) => (
         <Marker key={index} position={[marker.lat, marker.lon]}>
-          <Popup>{marker.address}</Popup>
+          <Popup>
+            {marker.project}<br />
+            {marker.address}
+          </Popup>
         </Marker>
       ))}
     </MapContainer>
