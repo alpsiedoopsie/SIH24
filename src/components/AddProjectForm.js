@@ -6,17 +6,20 @@ const AddProjectForm = ({ onAddProject }) => {
   const [department, setDepartment] = useState('');
   const [completionTime, setCompletionTime] = useState('');
   const [place, setPlace] = useState('');
+  const [currentLocation, setCurrentLocation] = useState({ lat: null, lon: null });
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     const newProject = {
-      id: Date.now(), // Or use any unique ID generator
+      id: Date.now(),
       name,
       description,
       department,
       completionTime,
       place,
+      lat: currentLocation.lat,
+      lon: currentLocation.lon,
     };
 
     onAddProject(newProject);
@@ -27,6 +30,26 @@ const AddProjectForm = ({ onAddProject }) => {
     setDepartment('');
     setCompletionTime('');
     setPlace('');
+    setCurrentLocation({ lat: null, lon: null });
+  };
+
+  const handleUseCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentLocation({
+            lat: position.coords.latitude,
+            lon: position.coords.longitude,
+          });
+          setPlace('Current Location'); // Optional: Set a placeholder for the current location
+        },
+        (error) => {
+          console.error('Error fetching current location:', error);
+        }
+      );
+    } else {
+      console.error('Geolocation is not supported by this browser.');
+    }
   };
 
   return (
@@ -72,8 +95,10 @@ const AddProjectForm = ({ onAddProject }) => {
           type="text"
           value={place}
           onChange={(e) => setPlace(e.target.value)}
-          required
         />
+        <button type="button" onClick={handleUseCurrentLocation}>
+          Use Current Location
+        </button>
       </div>
       <button type="submit">Add Project</button>
     </form>

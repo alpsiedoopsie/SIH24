@@ -13,41 +13,48 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
-const MapWithMarkers = ({ place, project }) => {
+const MapWithMarkers = ({ place, project, lat, lon }) => {
   const [markers, setMarkers] = useState([]);
-  const apiKey = '6be8fe7e245a435999e51f7fc43e3a58'; // Replace with your OpenCage API key
+  const apiKey = 'YOUR_OPENCAGE_API_KEY'; // Replace with your OpenCage API key
 
   useEffect(() => {
     const addMarker = async () => {
-      try {
-        const response = await axios.get(
-          `https://api.opencagedata.com/geocode/v1/json`,
-          {
-            params: {
-              q: place,
-              key: apiKey,
-            },
-          }
-        );
+      if (lat && lon) {
+        // Use the provided latitude and longitude
+        setMarkers((prevMarkers) => [
+          ...prevMarkers,
+          { lat, lon, address: place, project: project },
+        ]);
+      } else if (place) {
+        // Geocode the place if latitude and longitude are not provided
+        try {
+          const response = await axios.get(
+            `https://api.opencagedata.com/geocode/v1/json`,
+            {
+              params: {
+                q: place,
+                key: apiKey,
+              },
+            }
+          );
 
-        if (response.data.results && response.data.results.length > 0) {
-          const { lat, lng } = response.data.results[0].geometry;
-          setMarkers((prevMarkers) => [
-            ...prevMarkers,
-            { lat, lon: lng, address: place, project: project },
-          ]);
-        } else {
-          console.error("No location data found for the specified place.");
+          if (response.data.results && response.data.results.length > 0) {
+            const { lat, lng } = response.data.results[0].geometry;
+            setMarkers((prevMarkers) => [
+              ...prevMarkers,
+              { lat, lon: lng, address: place, project: project },
+            ]);
+          } else {
+            console.error("No location data found for the specified place.");
+          }
+        } catch (error) {
+          console.error("Error fetching location data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching location data:", error);
       }
     };
 
-    if (place) {
-      addMarker();
-    }
-  }, [place, project, apiKey]);
+    addMarker();
+  }, [place, project, lat, lon, apiKey]);
 
   return (
     <MapContainer
