@@ -4,27 +4,35 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 
+// Import images directly
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
 // Fix for default marker icon issue in React-Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
 });
 
 const MapWithMarkers = ({ place, project, lat, lon }) => {
-  const [markers, setMarkers] = useState([]);
-  const apiKey = 'YOUR_OPENCAGE_API_KEY'; // Replace with your OpenCage API key
+  const [markers, setMarkers] = useState(() => {
+    const savedMarkers = localStorage.getItem("markers");
+    return savedMarkers ? JSON.parse(savedMarkers) : [];
+  });
+  const apiKey = '6be8fe7e245a435999e51f7fc43e3a58'; // Replace with your OpenCage API key
 
   useEffect(() => {
     const addMarker = async () => {
       if (lat && lon) {
         // Use the provided latitude and longitude
-        setMarkers((prevMarkers) => [
-          ...prevMarkers,
-          { lat, lon, address: place, project: project },
-        ]);
+        const newMarker = { lat, lon, address: place, project: project };
+        const updatedMarkers = [...markers, newMarker];
+        setMarkers(updatedMarkers);
+        localStorage.setItem("markers", JSON.stringify(updatedMarkers));
       } else if (place) {
         // Geocode the place if latitude and longitude are not provided
         try {
@@ -40,10 +48,10 @@ const MapWithMarkers = ({ place, project, lat, lon }) => {
 
           if (response.data.results && response.data.results.length > 0) {
             const { lat, lng } = response.data.results[0].geometry;
-            setMarkers((prevMarkers) => [
-              ...prevMarkers,
-              { lat, lon: lng, address: place, project: project },
-            ]);
+            const newMarker = { lat, lon: lng, address: place, project: project };
+            const updatedMarkers = [...markers, newMarker];
+            setMarkers(updatedMarkers);
+            localStorage.setItem("markers", JSON.stringify(updatedMarkers));
           } else {
             console.error("No location data found for the specified place.");
           }
@@ -53,8 +61,10 @@ const MapWithMarkers = ({ place, project, lat, lon }) => {
       }
     };
 
-    addMarker();
-  }, [place, project, lat, lon, apiKey]);
+    if (place || (lat && lon)) {
+      addMarker();
+    }
+  }, [place, project, lat, lon, apiKey, markers]);
 
   return (
     <MapContainer
