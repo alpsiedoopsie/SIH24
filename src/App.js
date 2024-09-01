@@ -1,11 +1,11 @@
-import LoginForm from './components/LoginForm';
+
+import Maps from './components/Maps';
 import ProjectsPage from './components/ProjectsPage';
 
 function App() {
   return (
     <>
-    <ProjectsPage />
-    <LoginForm />
+    <ProjectsPage />    
     </>
     
   );
